@@ -1,4 +1,8 @@
-import { updateMatrix } from "functional-game-utils";
+import {
+  compareLocations,
+  mapMatrix,
+  updateMatrix,
+} from "functional-game-utils";
 import React, { useState } from "react";
 import { createGlobalStyle, ThemeProvider } from "styled-components";
 import useHealth from "../hooks/useHealth";
@@ -10,6 +14,10 @@ import Inventory from "./Inventory";
 import Moves from "./Moves";
 import { startingInventory } from "../data/items";
 import useInventory from "../hooks/useInventory";
+import addOffsetToLocations from "../utils/addOffsetToLocations";
+import getTargetLocationsFromMovePattern from "../utils/moves/getTargetLocationsFromMovePattern";
+import getCenterLocation from "../utils/getCenterLocation";
+import invertLocation from "../utils/invertLocation";
 
 const dimensions = {
   width: 10,
@@ -55,12 +63,33 @@ const App = () => {
             tile={tile}
             key={JSON.stringify(location)}
             revealLocation={() => {
-              const newTiles = updateMatrix(
+              const patternTargetLocations =
+                getTargetLocationsFromMovePattern(currentMove);
+              let targetLocations = addOffsetToLocations(
                 location,
-                { ...tile, revealed: true },
-                tiles
+                patternTargetLocations
               );
 
+              const patternCenterLocation = getCenterLocation(
+                currentMove.pattern
+              );
+              const patternCenterOffset = invertLocation(patternCenterLocation);
+              targetLocations = addOffsetToLocations(
+                patternCenterOffset,
+                targetLocations
+              );
+
+              const newTiles = mapMatrix((tile, location) => {
+                const compareToCurrentLocation = compareLocations(location);
+
+                if (targetLocations.some(compareToCurrentLocation)) {
+                  return { ...tile, revealed: true };
+                }
+
+                return tile;
+              }, tiles);
+
+              useCurrentMove();
               setTiles(newTiles);
             }}
           />
