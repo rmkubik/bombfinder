@@ -1,7 +1,7 @@
 import {
   compareLocations,
+  getLocation,
   mapMatrix,
-  updateMatrix,
 } from "functional-game-utils";
 import React, { useState } from "react";
 import { createGlobalStyle, ThemeProvider } from "styled-components";
@@ -15,6 +15,8 @@ import Moves from "./Moves";
 import { startingInventory } from "../data/items";
 import useInventory from "../hooks/useInventory";
 import getTargetLocationsFromMove from "../utils/getTargetLocationsFromMove";
+import calculateHintValue from "../utils/calculateHintValue";
+import useRerolls from "../hooks/useRerolls";
 
 const dimensions = {
   width: 10,
@@ -46,10 +48,12 @@ const App = () => {
       ],
     })
   );
-  const { heal, damage, health } = useHealth();
+  const { heal, damage, setHealth, health, maxHealth } = useHealth();
   const { inventory, usedMoves, availableMoves, currentMove, useCurrentMove } =
     useInventory(startingInventory);
   const [hoveredLocation, setHoveredLocation] = useState({ row: -1, col: -1 });
+  const [food, setFood] = useState(10);
+  const { rerolls, maxRerolls, useReroll } = useRerolls(2);
 
   return (
     <ThemeProvider theme={theme}>
@@ -71,6 +75,7 @@ const App = () => {
               key={JSON.stringify(location)}
               isHovered={isHovered}
               isTargeted={isTargeted}
+              hintValue={calculateHintValue(tiles, location)}
               setIsHovered={(newIsHovered) => {
                 if (newIsHovered) {
                   setHoveredLocation(location);
@@ -89,6 +94,21 @@ const App = () => {
                   return tile;
                 }, tiles);
 
+                const newHealth = targetLocations.reduce(
+                  (currentHealth, location) => {
+                    const tile = getLocation(newTiles, location);
+
+                    if (tile.icon === "💣") {
+                      return currentHealth - 1;
+                    }
+
+                    return currentHealth;
+                  },
+                  health
+                );
+
+                setFood(food - 1);
+                setHealth(newHealth);
                 useCurrentMove();
                 setTiles(newTiles);
               }}
@@ -98,13 +118,18 @@ const App = () => {
       />
       <Stats
         stats={{
-          health: { name: "Health", value: health },
-          rerolls: { name: "Rerolls", value: 2 },
-          food: { name: "Food", value: 10 },
+          health: { name: "Health", value: health, max: maxHealth },
+          rerolls: { name: "Rerolls", value: rerolls, max: maxRerolls },
+          food: { name: "Food", value: food },
         }}
       />
       <Inventory inventory={inventory} />
       <Moves
+        rerolls={rerolls}
+        useReroll={() => {
+          useCurrentMove();
+          useReroll();
+        }}
         currentMove={currentMove}
         availableMoves={availableMoves}
         usedMoves={usedMoves}

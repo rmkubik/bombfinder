@@ -7,7 +7,7 @@ const Stats = ({ stats }) => {
       <ul>
         {Object.values(stats).map((stat) => (
           <li key={stat.name}>
-            {stat.name} - {stat.value}
+            {stat.name} - {`${stat.value}${stat.max ? `/${stat.max}` : ""}`}
           </li>
         ))}
       </ul>

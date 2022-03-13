@@ -21,12 +21,23 @@ const TileContainer = styled.div`
 
 const Tile = ({
   tile,
+  hintValue,
   revealLocation,
   isHovered,
   isTargeted,
   setIsHovered,
 }) => {
   const isRevealed = tile.revealed;
+
+  let tileContents = "";
+
+  if (isRevealed) {
+    tileContents = tile.icon;
+
+    if (!tileContents) {
+      tileContents = hintValue;
+    }
+  }
 
   return (
     <TileContainer
@@ -37,7 +48,7 @@ const Tile = ({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {isRevealed ? tile.icon : ""}
+      {tileContents}
     </TileContainer>
   );
 };

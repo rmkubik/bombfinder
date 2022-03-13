@@ -13,7 +13,7 @@ const useHealth = () => {
     setHealth(newHealth);
   };
 
-  return { health, damage, heal };
+  return { health, maxHealth, setHealth, damage, heal };
 };
 
 export default useHealth;

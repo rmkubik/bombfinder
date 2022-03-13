@@ -7,7 +7,9 @@ import {
 import shuffle from "./shuffle";
 
 const generateMap = ({ dimensions, populationTable = [] }) => {
-  let map = constructMatrix(() => ".", dimensions);
+  let map = constructMatrix(() => {
+    return { icon: "" };
+  }, dimensions);
 
   const mapLocations = mapMatrix((_, location) => location, map).flat();
   let shuffledLocations = shuffle(mapLocations);
