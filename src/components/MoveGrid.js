@@ -4,7 +4,7 @@ import Grid from "./Grid";
 const MoveGrid = ({ move }) => {
   return (
     <Grid
-      tiles={move}
+      tiles={move.pattern}
       renderTile={(char, location) => (
         <div key={JSON.stringify(location)}>{char}</div>
       )}

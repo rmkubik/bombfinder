@@ -17,8 +17,8 @@ const MovesContainer = styled.ul`
 const MovesList = ({ moves }) => {
   return (
     <MovesContainer>
-      {moves.map((move, index) => (
-        <li key={index}>
+      {moves.map((move) => (
+        <li key={move.id}>
           <MoveGrid move={move} />
         </li>
       ))}
