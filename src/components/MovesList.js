@@ -15,6 +15,10 @@ const MovesContainer = styled.ul`
 `;
 
 const MovesList = ({ moves }) => {
+  if (!moves || moves.length === 0) {
+    return null;
+  }
+
   return (
     <MovesContainer>
       {moves.map((move) => (

@@ -42,7 +42,10 @@ const App = () => {
     })
   );
   const { heal, damage, health } = useHealth();
-  const { inventory } = useInventory(startingInventory);
+  const { inventory, usedMoves, availableMoves, currentMove, useCurrentMove } =
+    useInventory(startingInventory);
+
+  console.log({ inventory, currentMove, availableMoves, useCurrentMove });
 
   return (
     <ThemeProvider theme={theme}>
@@ -65,9 +68,18 @@ const App = () => {
           />
         )}
       />
-      <Stats stats={{ health: { name: "Health", value: health } }} />
+      <Stats
+        stats={{
+          health: { name: "Health", value: health },
+          rerolls: { name: "Rerolls", value: 2 },
+        }}
+      />
       <Inventory inventory={inventory} />
-      <Moves inventory={inventory} />
+      <Moves
+        currentMove={currentMove}
+        availableMoves={availableMoves}
+        usedMoves={usedMoves}
+      />
     </ThemeProvider>
   );
 };
