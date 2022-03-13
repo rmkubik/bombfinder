@@ -45,8 +45,6 @@ const App = () => {
   const { inventory, usedMoves, availableMoves, currentMove, useCurrentMove } =
     useInventory(startingInventory);
 
-  console.log({ inventory, currentMove, availableMoves, useCurrentMove });
-
   return (
     <ThemeProvider theme={theme}>
       <GlobalStyle />

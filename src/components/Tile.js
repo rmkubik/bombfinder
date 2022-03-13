@@ -1,22 +1,31 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 
-const HiddenTile = styled.div`
-  background-color: lightgray;
+const TileContainer = styled.div`
+  background-color: ${(props) =>
+    props.isRevealed ? "aliceblue" : "lightgray"};
   width: ${(props) => `${props.theme.tileSize}px`};
   height: ${(props) => `${props.theme.tileSize}px`};
-`;
-
-const RevealedTile = styled.div`
-  background-color: aliceblue;
+  border: ${(props) =>
+    props.isHovered ? "1px solid black" : "1px solid transparent"};
 `;
 
 const Tile = ({ tile, revealLocation }) => {
-  if (tile.revealed) {
-    return <RevealedTile>{tile.icon}</RevealedTile>;
-  }
+  const [isHovered, setIsHovered] = useState(false);
 
-  return <HiddenTile onClick={revealLocation} />;
+  const isRevealed = tile.revealed;
+
+  return (
+    <TileContainer
+      onClick={revealLocation}
+      isRevealed={isRevealed}
+      isHovered={isHovered}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {isRevealed ? tile.icon : ""}
+    </TileContainer>
+  );
 };
 
 export default Tile;
