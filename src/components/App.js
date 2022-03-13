@@ -14,10 +14,7 @@ import Inventory from "./Inventory";
 import Moves from "./Moves";
 import { startingInventory } from "../data/items";
 import useInventory from "../hooks/useInventory";
-import addOffsetToLocations from "../utils/addOffsetToLocations";
-import getTargetLocationsFromMovePattern from "../utils/moves/getTargetLocationsFromMovePattern";
-import getCenterLocation from "../utils/getCenterLocation";
-import invertLocation from "../utils/invertLocation";
+import getTargetLocationsFromMove from "../utils/getTargetLocationsFromMove";
 
 const dimensions = {
   width: 10,
@@ -52,53 +49,58 @@ const App = () => {
   const { heal, damage, health } = useHealth();
   const { inventory, usedMoves, availableMoves, currentMove, useCurrentMove } =
     useInventory(startingInventory);
+  const [hoveredLocation, setHoveredLocation] = useState({ row: -1, col: -1 });
 
   return (
     <ThemeProvider theme={theme}>
       <GlobalStyle />
       <Grid
         tiles={tiles}
-        renderTile={(tile, location) => (
-          <Tile
-            tile={tile}
-            key={JSON.stringify(location)}
-            revealLocation={() => {
-              const patternTargetLocations =
-                getTargetLocationsFromMovePattern(currentMove);
-              let targetLocations = addOffsetToLocations(
-                location,
-                patternTargetLocations
-              );
+        renderTile={(tile, location) => {
+          const isHovered = compareLocations(hoveredLocation, location);
+          const targetLocations = getTargetLocationsFromMove(
+            currentMove,
+            hoveredLocation
+          );
+          const compareToTileLocation = compareLocations(location);
+          const isTargeted = targetLocations.some(compareToTileLocation);
 
-              const patternCenterLocation = getCenterLocation(
-                currentMove.pattern
-              );
-              const patternCenterOffset = invertLocation(patternCenterLocation);
-              targetLocations = addOffsetToLocations(
-                patternCenterOffset,
-                targetLocations
-              );
-
-              const newTiles = mapMatrix((tile, location) => {
-                const compareToCurrentLocation = compareLocations(location);
-
-                if (targetLocations.some(compareToCurrentLocation)) {
-                  return { ...tile, revealed: true };
+          return (
+            <Tile
+              tile={tile}
+              key={JSON.stringify(location)}
+              isHovered={isHovered}
+              isTargeted={isTargeted}
+              setIsHovered={(newIsHovered) => {
+                if (newIsHovered) {
+                  setHoveredLocation(location);
+                } else if (isHovered) {
+                  setHoveredLocation({ row: -1, col: -1 });
                 }
+              }}
+              revealLocation={() => {
+                const newTiles = mapMatrix((tile, location) => {
+                  const compareToLocation = compareLocations(location);
 
-                return tile;
-              }, tiles);
+                  if (targetLocations.some(compareToLocation)) {
+                    return { ...tile, revealed: true };
+                  }
 
-              useCurrentMove();
-              setTiles(newTiles);
-            }}
-          />
-        )}
+                  return tile;
+                }, tiles);
+
+                useCurrentMove();
+                setTiles(newTiles);
+              }}
+            />
+          );
+        }}
       />
       <Stats
         stats={{
           health: { name: "Health", value: health },
           rerolls: { name: "Rerolls", value: 2 },
+          food: { name: "Food", value: 10 },
         }}
       />
       <Inventory inventory={inventory} />
