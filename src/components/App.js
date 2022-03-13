@@ -17,6 +17,7 @@ import useInventory from "../hooks/useInventory";
 import getTargetLocationsFromMove from "../utils/getTargetLocationsFromMove";
 import calculateHintValue from "../utils/calculateHintValue";
 import useRerolls from "../hooks/useRerolls";
+import Character from "./Character";
 
 const dimensions = {
   width: 10,
@@ -42,9 +43,10 @@ const App = () => {
         ["💣", 10],
         ["💰", 5],
         ["🍗", 5],
-        ["❤️", 2],
+        ["❤️", 1],
+        ["🩸", 3],
         ["🚪", 1],
-        ["🏠", 1],
+        // ["🏠", 1],
       ],
     })
   );
@@ -102,6 +104,10 @@ const App = () => {
                       return currentHealth - 1;
                     }
 
+                    if (tile.icon === "🩸") {
+                      return currentHealth + 1;
+                    }
+
                     return currentHealth;
                   },
                   health
@@ -116,6 +122,7 @@ const App = () => {
           );
         }}
       />
+      <Character health={health} />
       <Stats
         stats={{
           health: { name: "Health", value: health, max: maxHealth },
