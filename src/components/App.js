@@ -20,8 +20,8 @@ import useRerolls from "../hooks/useRerolls";
 import Character from "./Character";
 
 const dimensions = {
-  width: 10,
-  height: 10,
+  width: 8,
+  height: 8,
 };
 const theme = {
   tileSize: 48,
@@ -40,9 +40,9 @@ const App = () => {
     generateMap({
       dimensions,
       populationTable: [
-        ["💣", 10],
-        ["💰", 5],
-        ["🍗", 5],
+        ["💣", 9],
+        ["💰", 4],
+        ["🍗", 4],
         ["❤️", 1],
         ["🩸", 3],
         ["🚪", 1],
